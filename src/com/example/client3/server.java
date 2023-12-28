@@ -10,7 +10,7 @@ public class server {
         ServerSocket serverSocket = null;
 
         try {
-            serverSocket = new ServerSocket(14321);
+            serverSocket = new ServerSocket(54321);
             System.out.println("클라이언트 연결 대기 중...");
 
             clientSocket = serverSocket.accept();

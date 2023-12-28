@@ -707,19 +707,19 @@ class Make_Get extends Make { //maincommandtype이 0x03(User)일때
 }
 
 class Make_Debug extends Make {
-	private byte subCommandType;
-	private String name;
-	
-	public Make_Debug(byte mainCommandType, byte subCommandType, String name) {
-		super(mainCommandType);
-		if (subCommandType == 0x00) { // From Control Box
+   private byte subCommandType;
+   private String name;
+   
+   public Make_Debug(byte mainCommandType, byte subCommandType, String name) {
+      super(mainCommandType);
+      if (subCommandType == 0x00) { // From Control Box
             this.name = name;}
-		if(subCommandType == 0x01) {
-			this.name = name;
-		}
+      if(subCommandType == 0x01) {
+         this.name = name;
+      }
 
-	}
-	
+   }
+   
     public byte getSubCommandType() {
         return subCommandType;
     }
@@ -727,7 +727,7 @@ class Make_Debug extends Make {
     public String getName() {
         return name;
     }
-	
+   
 }
 
 class Make_Set extends Make {
@@ -807,8 +807,8 @@ class Make_Set extends Make {
                      float workspace_x, float workspace_y, float workspace_z, byte enable_Workspace, float inbox_x_width, float inbox_y_width, float inbox_z_width,
                      float inbox_x, float inbox_y, float inbox_z, byte inbox_Number, byte collison_on_off_enable, byte serial_Configuration_Device,
                      byte serial_Configuration_Baud_Rate, byte serial_Configuration_Stop_Bit, float speed_Bar_Speen_Bar, byte collsion_stop_Mode,
-                     byte user_Coordinate_Shift_User_Coordinate,byte user_Coordinate_Shift_Shift_Reference_Coordinate, byte user_Coordinate_Shift_x,
-                     byte user_Coordinate_Shift_y,byte user_Coordinate_Shift_z,byte after_Collision_Detect_Mode, byte disable_Box_Mode, byte user_Coordinate_Config_User_Coord,
+                     byte user_Coordinate_Shift_User_Coordinate,byte user_Coordinate_Shift_Shift_Reference_Coordinate, float user_Coordinate_Shift_x,
+                     float user_Coordinate_Shift_y,float user_Coordinate_Shift_z,byte after_Collision_Detect_Mode, byte disable_Box_Mode, byte user_Coordinate_Config_User_Coord,
                      byte user_Coordinate_Config_Temporory, byte user_Coordinate_Config_Option, byte user_Coordinate_Config_Point1,byte user_Coordinate_Config_Point2,
                      byte user_Coordinate_Config_Point3, byte vibration_Senosor_Mode, byte high_Acceleration_Mode, byte high_Sensitivity_Mode, float no_Arc_Move_Speed_Vel, float no_Arc_Move_Speed_ACC
                      ) {
@@ -862,61 +862,61 @@ class Make_Set extends Make {
             this.enable_Workspace = enable_Workspace;
         }
         if (subCommandType == 0x07) { //인 박스영역설정
-        	this.inbox_x_width = inbox_x_width;
-        	this.inbox_y_width = inbox_y_width;
-        	this.inbox_z_width = inbox_z_width;
-        	this.inbox_x = inbox_x;
-        	this.inbox_y = inbox_y;
-        	this.inbox_z = inbox_z;
-        	this.inbox_Number = inbox_Number;
+           this.inbox_x_width = inbox_x_width;
+           this.inbox_y_width = inbox_y_width;
+           this.inbox_z_width = inbox_z_width;
+           this.inbox_x = inbox_x;
+           this.inbox_y = inbox_y;
+           this.inbox_z = inbox_z;
+           this.inbox_Number = inbox_Number;
         }
         if (subCommandType == 0x08){ //충돌감지 on/off
-        	this.collsion_on_off_enable = collison_on_off_enable;
+           this.collsion_on_off_enable = collison_on_off_enable;
         }
         if (subCommandType == 0x09) { //시리얼 통신 설정
-        	this.serial_Configuration_Device = serial_Configuration_Device;
-        	this.serial_Configuration_Baud_Rate = serial_Configuration_Baud_Rate;
-        	this.serial_Configuration_Stop_Bit = serial_Configuration_Stop_Bit;
+           this.serial_Configuration_Device = serial_Configuration_Device;
+           this.serial_Configuration_Baud_Rate = serial_Configuration_Baud_Rate;
+           this.serial_Configuration_Stop_Bit = serial_Configuration_Stop_Bit;
         }
         if (subCommandType == 0x0A) { //속도 조절 바 제어
-        	this.speed_Bar_Speen_Bar = speed_Bar_Speen_Bar;
+           this.speed_Bar_Speen_Bar = speed_Bar_Speen_Bar;
         }
         if (subCommandType == 0X0B) { //충돌 감지 후 로봇 정지 모드
-        	this.collsion_stop_Mode = collsion_stop_Mode;
+           this.collsion_stop_Mode = collsion_stop_Mode;
         }
         if(subCommandType == 0X0C){ //사용자 좌표계 시프팅
-        	this.user_Coordinate_Shift_User_Coordinate = user_Coordinate_Shift_User_Coordinate;
-        	this.user_Coordinate_Shift_Shift_Reference_Coordinate = user_Coordinate_Shift_Shift_Reference_Coordinate;
-        	this.user_Coordinate_Shift_x = user_Coordinate_Shift_x;
-        	this.user_Coordinate_Shift_y = user_Coordinate_Shift_y;
-        	this.user_Coordinate_Shift_z = user_Coordinate_Shift_z;
+           this.user_Coordinate_Shift_User_Coordinate = user_Coordinate_Shift_User_Coordinate;
+           this.user_Coordinate_Shift_Shift_Reference_Coordinate = user_Coordinate_Shift_Shift_Reference_Coordinate;
+           this.user_Coordinate_Shift_x = user_Coordinate_Shift_x;
+           this.user_Coordinate_Shift_y = user_Coordinate_Shift_y;
+           this.user_Coordinate_Shift_z = user_Coordinate_Shift_z;
         }
         if(subCommandType == 0X0D) { //충돌 감지 후 프로그램 흐름
-        	this.after_Collision_Detect_Mode = after_Collision_Detect_Mode;
+           this.after_Collision_Detect_Mode = after_Collision_Detect_Mode;
         }
         if(subCommandType == 0x0E) { //제어박스 출력 임시 제어
-        	this.disable_Box_Mode = disable_Box_Mode;
+           this.disable_Box_Mode = disable_Box_Mode;
         }
         if(subCommandType == 0x0F) { //사용자 좌표계 임시 설정
-        	this.user_Coordinate_Config_User_Coord = user_Coordinate_Config_User_Coord;
-        	this.user_Coordinate_Config_Temporory = user_Coordinate_Config_Temporory;
-        	this.user_Coordinate_Config_Option = user_Coordinate_Config_Option;
-        	this.user_Coordinate_Config_Point1 = user_Coordinate_Config_Point1;
-        	this.user_Coordinate_Config_Point2 = user_Coordinate_Config_Point2;
-        	this.user_Coordinate_Config_Point3 = user_Coordinate_Config_Point3;
+           this.user_Coordinate_Config_User_Coord = user_Coordinate_Config_User_Coord;
+           this.user_Coordinate_Config_Temporory = user_Coordinate_Config_Temporory;
+           this.user_Coordinate_Config_Option = user_Coordinate_Config_Option;
+           this.user_Coordinate_Config_Point1 = user_Coordinate_Config_Point1;
+           this.user_Coordinate_Config_Point2 = user_Coordinate_Config_Point2;
+           this.user_Coordinate_Config_Point3 = user_Coordinate_Config_Point3;
         }
         if(subCommandType == 0x10) { //진동 센서 감지 on/off
-        	this.vibration_Senosor_Mode = vibration_Senosor_Mode;
+           this.vibration_Senosor_Mode = vibration_Senosor_Mode;
         }
         if(subCommandType == 0x11) { //고속 가속 모드
-        	this.high_Acceleration_Mode = high_Acceleration_Mode;
+           this.high_Acceleration_Mode = high_Acceleration_Mode;
         }
         if(subCommandType == 0x12) { //고 민감도 충돌 감지
-        	this.high_Sensitivity_Mode = high_Sensitivity_Mode;
+           this.high_Sensitivity_Mode = high_Sensitivity_Mode;
         }
         if(subCommandType == 0x13) { // 노 아크 동작 속도
-        	this.no_Arc_Move_Speed_Vel = no_Arc_Move_Speed_Vel;
-        	this.no_Arc_Move_Speed_ACC = no_Arc_Move_Speed_ACC;
+           this.no_Arc_Move_Speed_Vel = no_Arc_Move_Speed_Vel;
+           this.no_Arc_Move_Speed_ACC = no_Arc_Move_Speed_ACC;
         }
     }
 
@@ -1175,6 +1175,5 @@ class Make_Set extends Make {
         return no_Arc_Move_Speed_ACC;
     }
 }
-
 
 
