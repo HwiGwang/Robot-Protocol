@@ -19,9 +19,9 @@ public class Make_JogData {
 	   float x = receivedData.getX();
        float y = receivedData.getY();
        float z = receivedData.getZ();
-       float rx = receivedData.getRX();
-       float ry = receivedData.getRY();
-       float rz = receivedData.getRZ();
+       float rx = receivedData.getRx();
+       float ry = receivedData.getRy();
+       float rz = receivedData.getRz();
 
        // 데이터 출력 또는 처리
        System.out.println("Main Command Type: " + receivedData.getMainCommandType());
@@ -38,9 +38,9 @@ public class Make_JogData {
 	   float x = receivedData.getX();
        float y = receivedData.getY();
        float z = receivedData.getZ();
-       float rx = receivedData.getRX();
-       float ry = receivedData.getRY();
-       float rz = receivedData.getRZ();
+       float rx = receivedData.getRx();
+       float ry = receivedData.getRy();
+       float rz = receivedData.getRz();
        float dist = receivedData.getDist();
        float ori = receivedData.getOri();
        float joint = receivedData.getJoint();

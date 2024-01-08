@@ -2,67 +2,98 @@ package com.example.client3;
 
 import java.io.*;
 import java.net.*;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.logging.Logger;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Level;
 
 public class server {
+    private final static Logger LOGGER = Logger.getLogger(server.class.getName());
 
-    public static void main(String[] args) throws IOException {
-        Socket clientSocket = null;
-        ServerSocket serverSocket = null;
+    public static void main(String[] args) {
+        ServerSocket serverSocket_1st = null;
 
         try {
-            serverSocket = new ServerSocket(54321);
-            System.out.println("클라이언트 연결 대기 중...");
+            serverSocket_1st = new ServerSocket(9000);
+            LOGGER.info("클라이언트 연결 대기 중...");
+            
+            //새로운 포트를 열고 클라이언트 연결 대기중
+            ServerSocket serverSocket_2nd = new ServerSocket(9001); 
+            LOGGER.info("추가 포트 " + 9001 + " 대기 중...");
 
-            clientSocket = serverSocket.accept();
-            System.out.println("클라이언트 연결됨");
-
+            // Timer를 사용하여 주기적으로 좌표값을 클라이언트로 보냅니다.
+            Timer timer = new Timer();
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    secondClient(serverSocket_2nd);
+                }
+            }, 0, 500); // 0초부터 시작하여 0.5초 간격으로 실행
             
 
-            
-            // 클라이언트로부터 데이터를 읽기 위한 입력 스트림 생성
-            InputStream in = clientSocket.getInputStream();
-            ObjectInputStream objectInputStream = new ObjectInputStream(in);
+            while (true) {
+                Socket clientSocket = serverSocket_1st.accept();
+                LOGGER.info("클라이언트 연결됨");	
 
-            // 받은 데이터를 Make 객체로 형변환
-            Make receivedData = (Make) objectInputStream.readObject();
-            byte mainCommandType = receivedData.getMainCommandType();
+                // 클라이언트로부터 데이터를 바이트 배열로 직접 읽기
+                InputStream in = clientSocket.getInputStream();
+                byte[] receivedDataBytes = new byte[300];  // 클라이언트에서 보낸 것과 동일한 크기로 설정
+                int readBytes = in.read(receivedDataBytes);
 
+                if (readBytes > 0) {
+                    LOGGER.info("데이터 읽기 시도");
 
-            // 서브클래스로 형변환하여 처리
-            if (receivedData instanceof Make_Jog) {
-            	Make_JogData.Make_Jog_Command((Make_Jog) receivedData);
-            } else if (receivedData instanceof Make_User) {
-            	Make_UserData.Make_User_Command((Make_User) receivedData);
-            }else if (receivedData instanceof Make_Move) {
-            	Make_MoveData.Make_Move_Command((Make_Move) receivedData);
-            }else if (receivedData instanceof Make_Circle) {
-            	Make_CircleData.Make_Circle_Command((Make_Circle) receivedData);
-            }else if (receivedData instanceof Make_Debug) {
-            	Make_DebugData.Make_Debug_Command((Make_Debug) receivedData);
-            }else if (receivedData instanceof Make_Set) {
-            	Make_SetData.Make_Set_Command((Make_Set) receivedData);
+                    // 수신된 데이터를 처리합니다. 예: ByteBuffer로 감싸서 데이터 추출
+                    ByteBuffer buffer = ByteBuffer.wrap(receivedDataBytes);
+                    buffer.order(ByteOrder.LITTLE_ENDIAN);
+                    
+                    // 데이터 추출 예시
+                    byte mainCommandType = buffer.get();
+                    byte subCommandType = buffer.get();
+                    // ... 추가 데이터 추출 ...
+                    
+                    if(mainCommandType >= 0x00 && mainCommandType <= 0x02) {
+                        Make_Jog receivedData = new Make_Jog(receivedDataBytes);
+                        Make_JogData.Make_Jog_Command(receivedData);
+                    } else if (mainCommandType == 0x03) {
+                        Make_Joint receivedData = new Make_Joint(receivedDataBytes);
+                        Make_JointData.Make_Joint_Command(receivedData);
+                    } else {
+                        LOGGER.warning("Unknown mainCommandType: " + mainCommandType);
+                        // Handle unknown command type
+                    }
+                  
+                }
+
+                // 클라이언트 소켓 닫기
+                closeSocket(clientSocket);
             }
-            
-            Make sendData1 = new Make_Get((byte)0x05, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-            Make sendData2 = new Make_Debug((byte)0x05, (byte)0x01, "Debug");
-            ObjectOutputStream outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-            outputStream.writeObject(sendData2);
-            
-           
-        } catch (IOException | ClassNotFoundException e) {
+
+        } catch (IOException e) {
             e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "오류 발생", e);
         } finally {
-            closeSocket(clientSocket);
-            closeSocket(serverSocket);
+            closeSocket(serverSocket_1st);
         }
     }
+    
+    private static void secondClient(ServerSocket serverSocket_2nd) {
+    	try {
+    		Socket clientSocket = serverSocket_2nd.accept();
+            LOGGER.info("추가 포트 " + serverSocket_2nd.getLocalPort() + "에서 클라이언트 연결됨");
+            
+            
+            
+            closeSocket(clientSocket);
 
-     
-    
-    
-    	
-    	
-    
+
+    	}catch (IOException e) {
+            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "오류 발생", e);
+        }
+    }
 
     private static void closeSocket(Socket socket) {
         try {
@@ -73,7 +104,7 @@ public class server {
             e.printStackTrace();
         }
     }
-    
+
     private static void closeSocket(ServerSocket serverSocket) {
         try {
             if (serverSocket != null && !serverSocket.isClosed()) {
