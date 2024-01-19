@@ -24,15 +24,8 @@ public abstract class Make implements Serializable {
 
 class Make_Jog extends Make {
     private byte subCommandType;
-    private float x;
-    private float y;
-    private float z;
-    private float rx;
-    private float ry;
-    private float rz;
-    private float dist;
-    private float ori;
-    private float joint;
+    private Robo_Position robo_Position;
+
 
     public Make_Jog(byte[] readBytes) {
         super(readBytes[0]);
@@ -43,55 +36,47 @@ class Make_Jog extends Make {
         buffer.get();
 
         this.subCommandType = buffer.get();
-        this.x = buffer.getFloat();
-        this.y = buffer.getFloat();
-        this.z = buffer.getFloat();
-        this.rx = buffer.getFloat();
-        this.ry = buffer.getFloat();
-        this.rz = buffer.getFloat();
-        this.dist = buffer.getFloat();
-        this.ori = buffer.getFloat();
-        this.joint = buffer.getFloat();
+        this.robo_Position = new Robo_Position();
+        
+        if (getMainCommandType() == 0x00) {
+            // 기존 global 변수 사용
+            this.robo_Position.global_x = buffer.getFloat();
+            this.robo_Position.global_y = buffer.getFloat();
+            this.robo_Position.global_z = buffer.getFloat();
+            this.robo_Position.global_Rx = buffer.getFloat();
+            this.robo_Position.global_Ry = buffer.getFloat();
+            this.robo_Position.global_Rz = buffer.getFloat();
+        }else if(getMainCommandType() == 0x01) {
+            this.robo_Position.local_x = buffer.getFloat();
+            this.robo_Position.local_y = buffer.getFloat();
+            this.robo_Position.local_z = buffer.getFloat();
+            this.robo_Position.local_Rx = buffer.getFloat();
+            this.robo_Position.local_Ry = buffer.getFloat();
+            this.robo_Position.local_Rz = buffer.getFloat();
+        }else if(getMainCommandType() == 0X02) {
+            // user 변수로 변경
+            this.robo_Position.user_x = buffer.getFloat();
+            this.robo_Position.user_y = buffer.getFloat();
+            this.robo_Position.user_z = buffer.getFloat();
+            this.robo_Position.user_Rx = buffer.getFloat();
+            this.robo_Position.user_Ry = buffer.getFloat();
+            this.robo_Position.user_Rz = buffer.getFloat();
+        }
+
+        this.robo_Position.dist = buffer.getFloat();
+        this.robo_Position.ori = buffer.getFloat();
+        this.robo_Position.joint = buffer.getFloat();
+
     }
     @Override
     public byte getSubCommandType() {
         return subCommandType;
     }
-    public float getX() {
-        return x;
+    
+    public Robo_Position getRoboPosition() {
+    	return robo_Position;
     }
-
-    public float getY() {
-        return y;
-    }
-
-    public float getZ() {
-        return z;
-    }
-
-    public float getRx() {
-        return rx;
-    }
-
-    public float getRy() {
-        return ry;
-    }
-
-    public float getRz() {
-        return rz;
-    }
-
-    public float getOri() {
-        return ori;
-    }
-
-    public float getDist() {
-        return dist;
-    }
-
-    public float getJoint() {
-        return joint;
-    }
+    
 
 
     @Override
@@ -100,34 +85,46 @@ class Make_Jog extends Make {
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(getMainCommandType());
         buffer.put(getSubCommandType());
-        buffer.putFloat(x);
-        buffer.putFloat(y);
-        buffer.putFloat(z);
-        buffer.putFloat(rx);
-        buffer.putFloat(ry);
-        buffer.putFloat(rz);
-        buffer.putFloat(dist);
-        buffer.putFloat(ori);
-        buffer.putFloat(joint);
+        
+        if (getMainCommandType() == 0x00) {
+            // 기존 global 변수 사용
+            buffer.putFloat(robo_Position.global_x);
+            buffer.putFloat(robo_Position.global_y);
+            buffer.putFloat(robo_Position.global_z);
+            buffer.putFloat(robo_Position.global_Rx);
+            buffer.putFloat(robo_Position.global_Ry);
+            buffer.putFloat(robo_Position.global_Rz);
+        } else if (getMainCommandType() == 0x02) {
+            // user 변수로 변경
+            buffer.putFloat(robo_Position.user_x);
+            buffer.putFloat(robo_Position.user_y);
+            buffer.putFloat(robo_Position.user_z);
+            buffer.putFloat(robo_Position.user_Rx);
+            buffer.putFloat(robo_Position.user_Ry);
+            buffer.putFloat(robo_Position.user_Rz);
+        } else if (getMainCommandType() == 0x01) {
+            buffer.putFloat(robo_Position.local_x);
+            buffer.putFloat(robo_Position.local_y);
+            buffer.putFloat(robo_Position.local_z);
+            buffer.putFloat(robo_Position.local_Rx);
+            buffer.putFloat(robo_Position.local_Ry);
+            buffer.putFloat(robo_Position.local_Rz);
+        }
+        
+        buffer.putFloat(robo_Position.dist);
+        buffer.putFloat(robo_Position.ori);
+        buffer.putFloat(robo_Position.joint);
         buffer.put((byte) 0x00); // 예약된 바이트
 
         return buffer.array();
     }
     
-    
-
-
 }
 
 class Make_Joint extends Make {
     private byte subCommandType;
-    private float joint1;
-    private float joint2;
-    private float joint3;
-    private float joint4;
-    private float dist;
-    private float ori;
-    private float joint;
+    private Robo_Position robo_Position;
+
 
     public Make_Joint(byte[] readBytes) {
         super(readBytes[0]);
@@ -138,44 +135,27 @@ class Make_Joint extends Make {
         buffer.get();
 
         this.subCommandType = buffer.get();
-        this.joint1 = buffer.getFloat();
-        this.joint2 = buffer.getFloat();
-        this.joint3 = buffer.getFloat();
-        this.joint4 = buffer.getFloat();
-        this.dist = buffer.getFloat();
-        this.ori = buffer.getFloat();
-        this.joint = buffer.getFloat();
+        this.robo_Position = new Robo_Position();
+        this.robo_Position.joint1 = buffer.getFloat();
+        this.robo_Position.joint2 = buffer.getFloat();
+        this.robo_Position.joint3 = buffer.getFloat();
+        this.robo_Position.joint4 = buffer.getFloat();
+
+        // 추가된 부분: dist, ori, joint 데이터를 읽음
+        this.robo_Position.dist = buffer.getFloat();
+        this.robo_Position.ori = buffer.getFloat();
+        this.robo_Position.joint = buffer.getFloat();
     }
+    
     @Override
     public byte getSubCommandType() {
         return subCommandType;
     }
-    public float getJoint1() {
-        return joint1;
-    }
 
-    public float getJoint2() {
-        return joint2;
+    public Robo_Position getRoboPosition() {
+    	return robo_Position;
     }
-    public float getJoint3() {
-        return joint3;
-    }
-    public float getJoint4() {
-        return joint4;
-    }
-
-    public float getOri() {
-        return ori;
-    }
-
-    public float getDist() {
-        return dist;
-    }
-
-    public float getJoint() {
-        return joint;
-    }
-
+    
 
     @Override
     public byte[] getBytes() {
@@ -183,13 +163,13 @@ class Make_Joint extends Make {
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(getMainCommandType());
         buffer.put(getSubCommandType());
-        buffer.putFloat(joint1);
-        buffer.putFloat(joint2);
-        buffer.putFloat(joint3);
-        buffer.putFloat(joint4);
-        buffer.putFloat(dist);
-        buffer.putFloat(ori);
-        buffer.putFloat(joint);
+        buffer.putFloat(robo_Position.joint1);
+        buffer.putFloat(robo_Position.joint2);
+        buffer.putFloat(robo_Position.joint3);
+        buffer.putFloat(robo_Position.joint4);
+        buffer.putFloat(robo_Position.dist);
+        buffer.putFloat(robo_Position.ori);
+        buffer.putFloat(robo_Position.joint);
         buffer.put((byte) 0x00); // 예약된 바이트
 
         return buffer.array();
@@ -197,3 +177,46 @@ class Make_Joint extends Make {
 
 }
 
+class Make_RoboCoordiante extends Make{
+	
+	private byte subCommandType;
+    private Robo_Position robo_Position;
+    private float DigitalOut;
+
+    public Make_RoboCoordiante(byte[] readBytes) {
+        super(readBytes[0]);
+
+        ByteBuffer buffer = ByteBuffer.wrap(readBytes);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+
+        buffer.get();
+
+        this.subCommandType = buffer.get();
+        this.robo_Position.joint1 = buffer.getFloat();
+        this.robo_Position.joint2 = buffer.getFloat();
+        this.robo_Position.joint3 = buffer.getFloat();
+        this.robo_Position.joint4 = buffer.getFloat();
+        this.DigitalOut = buffer.getFloat();
+
+    }
+    @Override
+    public byte getSubCommandType() {
+        return subCommandType;
+    }
+
+    @Override
+    public byte[] getBytes() {
+        ByteBuffer buffer = ByteBuffer.allocate(19);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put(getMainCommandType());
+        buffer.put(getSubCommandType());
+        buffer.putFloat(robo_Position.joint1);
+        buffer.putFloat(robo_Position.joint2);
+        buffer.putFloat(robo_Position.joint3);
+        buffer.putFloat(robo_Position.joint4);
+        buffer.putFloat(DigitalOut);
+        buffer.put((byte) 0x00); // 예약된 바이트
+
+        return buffer.array();
+    }
+}
